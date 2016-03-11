@@ -1,4 +1,4 @@
-How to use:
+The instructions basicly tell you how to how to set things up the way I had it when I wrote/tested this code:
 
 Step 1:
 
@@ -15,10 +15,9 @@ http://docs.opencv.org/doc/tutorials/introduction/windows_visual_studio_Opencv/w
 
 Step 3:
 
-Once the project is created you need to copy the following source and header files into your project folder & project explorer to
-compile and run the demo application.
+Once the project is created you need to copy the following source and header files into your project folder & project explorer to be able to use the methods. Things marked under source and header would go in the respective folder in the project explorer.
 
-Note: Files marked with (*) are the required files if you want to use the API without the demo application.
+Note: Files marked with (*) are the required files if you want to use the API. Everything else is extra...
 
 Source
 ------------------------
@@ -51,9 +50,3 @@ carCounter.h (*)
 Bgs.h (*)
 BgsParams.h (*)
 IBGS.h (*)
-
-Extras 
-(Put in the project folder)
-------------------------
-DPAdaptiveMedianBGS.xml
-FrameDifferenceBGS.xml
