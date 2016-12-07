@@ -2,6 +2,47 @@
 
 using namespace cv;
 
+namespace cv
+{
+  using std::vector;
+}
+
+// entry point
+int main() {
+  return 0;
+}
+
+// utility
+/**
+ * C++ version 0.4 char* style "itoa":
+ * Written by Lukás Chmela
+ * Released under GPLv3.
+
+ */
+char* itoa(int value, char* result, int base) {
+  // check that the base if valid
+  if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+  char* ptr = result, *ptr1 = result, tmp_char;
+  int tmp_value;
+
+  do {
+    tmp_value = value;
+    value /= base;
+    *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+  } while ( value );
+
+  // Apply negative sign
+  if (tmp_value < 0) *ptr++ = '-';
+  *ptr-- = '\0';
+  while(ptr1 < ptr) {
+    tmp_char = *ptr;
+    *ptr--= *ptr1;
+    *ptr1++ = tmp_char;
+  }
+  return result;
+}
+
 // db functions
 static int callback(void *NotUsed, int argc, char **argv, char **azColName){
 	int i;
@@ -82,7 +123,7 @@ void carCounter::closeDB(){
 }
 
 void carCounter::exportCarsToDB(int expID,char fileName[100],char saveImgTo[200],std::deque<Object> &carArchive,int fps) {
-	
+
 	int index = 0;
 	char *zErrMsg = 0;
 	char * sql;
@@ -129,7 +170,7 @@ void carCounter::exportCarsToDB(int expID,char fileName[100],char saveImgTo[200]
 
 	char * temp;
 	temp = new char[15];
-	
+
 	// File path
 	strcpy (value0,"'");
 	strncat (value0,fileName,100);
@@ -142,23 +183,23 @@ void carCounter::exportCarsToDB(int expID,char fileName[100],char saveImgTo[200]
 	strcpy (value1,"'");
 	strncat (value1,asctime(gmtm),100);
 	strncat (value1,"'",1);
-	
+
 	while(true){
 		while(index < carArchive.size()){
 			// Archive Last Frame Time
 			int last_frame = carArchive[index].frames[carArchive[index].frames.size()-1];
 			double secsInVideo = (double) (last_frame)/(double) (fps);
 			sprintf(value2, "%f", secsInVideo);
-			
+
 			// Expirement Id
 			itoa (expID,value3,10);
-			
+
 			// Archive Car Id
 			itoa (carArchive[index].id,value4,10);
 
 			// Archive Car Count
 			itoa (carArchive[index].count,value5,10);
-			
+
 			// Archive Frames
 			strcpy (value6,"'");
 			for(int i=1; i < carArchive[index].frames.size(); i++){
@@ -171,7 +212,7 @@ void carCounter::exportCarsToDB(int expID,char fileName[100],char saveImgTo[200]
 					strncat(value6,temp,15);
 				}
 			}
-			
+
 			// Archive ulX
 			strcpy (value7,"'");
 			for(int i=1; i < carArchive[index].ulx.size(); i++){
@@ -317,13 +358,13 @@ void carCounter::exportCarsToDB(int expID,char fileName[100],char saveImgTo[200]
 			}
 			index++;
 		}
-	}	
+	}
 }
 
 void carCounter::detectCarBoxForNight(cv::Mat &subtract,cv::Rect &boundRect,int minObjectSize){
 	cv::vector<cv::vector<cv::Point>> endRegionContours;
 	cv::vector<cv::Vec4i> endRegionHierarchy;
-					
+
 	findContours(subtract, endRegionContours, endRegionHierarchy, CV_RETR_EXTERNAL,  CV_CHAIN_APPROX_NONE, cv::Point(0, 0));
 	cv::vector<cv::vector<cv::Point>> endRegionContoursPoly(endRegionContours.size());
 	cv::vector<cv::Rect> endRegionboundRect(endRegionContours.size());
@@ -363,7 +404,7 @@ void carCounter::removeShadow(cv::Mat &subtract,cv::Mat3b &subtractrgb){
 		if(*it != Vec3b(255, 255, 255)) {
 			*it = Vec3b(0, 0, 0);
 		}
-	}	
+	}
 }
 
 void carCounter::cleanNoise(cv::Mat &mask, cv::Mat &extraMask,cv::Mat3b &maskrgb, cv::Mat3b &extraMaskrgb){
@@ -371,32 +412,32 @@ void carCounter::cleanNoise(cv::Mat &mask, cv::Mat &extraMask,cv::Mat3b &maskrgb
 	cv::dilate(mask,mask,cv::Mat(),Point(-1, -1), 3, 1, 1);
 	cv::medianBlur(mask,mask,21);
 	removeShadow(mask,maskrgb);
-			
-	cv::resize(maskrgb, maskrgb, cv::Size(frame.size().width, frame.size().height)); 
+
+	cv::resize(maskrgb, maskrgb, cv::Size(frame.size().width, frame.size().height));
 	cv::cvtColor(maskrgb,mask,CV_RGB2GRAY);
-			
+
 	if(extraMask.dims > 0){
 		cv::erode(extraMask,extraMask,cv::Mat(),Point(-1, -1), 1, 1, 1);
 		cv::dilate(extraMask,extraMask,cv::Mat(),Point(-1, -1), 3, 1, 1);
 		cv::medianBlur(extraMask,extraMask,21);
 		removeShadow(extraMask,extraMaskrgb);
-			
-		cv::resize(extraMaskrgb, extraMaskrgb, cv::Size(frame.size().width, frame.size().height)); 
+
+		cv::resize(extraMaskrgb, extraMaskrgb, cv::Size(frame.size().width, frame.size().height));
 		cv::cvtColor(extraMaskrgb,extraMask,CV_RGB2GRAY);
 	}
 }
 
-int carCounter::obtainBoundBoxes(cv::vector<cv::vector<cv::Point>> &contours,cv::vector<cv::vector<cv::Point>> &contours_poly, 
+int carCounter::obtainBoundBoxes(cv::vector<cv::vector<cv::Point>> &contours,cv::vector<cv::vector<cv::Point>> &contours_poly,
 								  cv::vector<cv::Rect> &boundRect,
 								  cv::vector<cv::Point2f> &center,cv::vector<float> &radius, int minObjectSize){
 	int j = 0;
-	for(int i = 0; i < contours.size(); i++){ 
+	for(int i = 0; i < contours.size(); i++){
 		approxPolyDP(cv::Mat(contours[i]), contours_poly[i], 3, true);
 		cv::minEnclosingCircle((Mat)contours_poly[i], center[j], radius[j]);
 		if(cv::boundingRect(cv::Mat(contours_poly[i])).area() > minObjectSize){
 			boundRect[j] = cv::boundingRect(cv::Mat(contours_poly[i]));
 			contours[j] = contours[i];
-			cv::minEnclosingCircle((Mat)contours_poly[i], center[j], radius[j]);		
+			cv::minEnclosingCircle((Mat)contours_poly[i], center[j], radius[j]);
 			j++;
 		}
 	}
@@ -408,9 +449,9 @@ void carCounter::createFrame(Frame &data, cv::vector<cv::vector<cv::Point>> &con
 							  cv::vector<cv::Rect> &boundRect,
 							  cv::vector<cv::Point2f> &center,
 						      cv::vector<float> &radius, int minObjectSize){
-	
+
 	int j = obtainBoundBoxes(contours,contours_poly,boundRect,center,radius,minObjectSize);
-	
+
 	contours.resize(j);
 	boundRect.resize(j);
 	center.resize(j);
@@ -500,7 +541,7 @@ double carCounter::findStd(vector<Mat> &hist, int channel){
 }
 
 double carCounter::histogramCalcAndFindStd(cv::Mat &frame,cv::Mat &background,cv::Mat& subtract,std::deque<Frame> &buffer, int boundBoxNum){
-		
+
 	cv::Mat croppedFrame;
 	cv::Mat croppedSubtract;
 	cv::Mat croppedBackground;
@@ -515,7 +556,7 @@ double carCounter::histogramCalcAndFindStd(cv::Mat &frame,cv::Mat &background,cv
 	vector<Mat> hist = calcHistogram(croppedDifference,croppedSubtract);
 
 	double std = findStd(hist,0);
-	
+
 	return std;
 }
 
@@ -534,9 +575,9 @@ void carCounter::startRegionMonitor(cv::Mat &frame, cv::Mat &background, cv::Mat
 	std::deque<Object> temp;
 	for(int i = 0; i < buffer[0].p.size(); i++){
 		bool safetyPass = safetyChecks(frame,background,subtract,buffer,i,10);
-		if(pointPolygonTest(startRegion, buffer[0].center[i], false) == 1 
+		if(pointPolygonTest(startRegion, buffer[0].center[i], false) == 1
 		   && safetyPass == true){
-			
+
 			if(!buffer[0].checked[i]){
 				buffer[0].start_loc[i] = buffer[0].center[i];
 				buffer[0].time[i] = 0;
@@ -575,14 +616,14 @@ void carCounter::startRegionMonitor(cv::Mat &frame, cv::Mat &background, cv::Mat
 			obj.trajectory.push_back(buffer[0].center[i]);
 			obj.frames.push_back(frame_counter);
 			obj.bIdx = i;
-		
+
 			temp.push_front(obj);
 		}
 	}
 	if(nightTime){
 		for(int x = temp.size()-1; x > -1; x--){
 			for(int y = temp.size()-1; y > -1; y--){
-				if(x != y && 
+				if(x != y &&
 					temp.at(x).center_when_last_seen.y < temp.at(y).center_when_last_seen.y+horizontalBandWidth &&
 					temp.at(x).center_when_last_seen.y > temp.at(y).center_when_last_seen.y-horizontalBandWidth &&
 				!temp.at(x).checked){
@@ -593,11 +634,11 @@ void carCounter::startRegionMonitor(cv::Mat &frame, cv::Mat &background, cv::Mat
 						temp.at(x).hasSibling = true;
 						temp.at(x).siblingID = temp.at(y).id;
 						temp.at(x).id = object_counter+1;
-						
+
 						buffer[0].id[temp.at(x).bIdx] = temp.at(x).id;
 						buffer[0].checked[temp.at(x).bIdx] = temp.at(x).checked;
 						transit.push_front(temp.at(x));
-						
+
 						for(int i = 0; i < transit.size(); i++)
 							transit[i].tIdx = i;
 
@@ -617,7 +658,7 @@ void carCounter::startRegionMonitor(cv::Mat &frame, cv::Mat &background, cv::Mat
 						buffer[0].id[temp.at(x).bIdx] = temp.at(x).id;
 						buffer[0].checked[temp.at(x).bIdx] = temp.at(x).checked;
 						object_counter++;
-					
+
 						temp.at(y).checked = true;
 						temp.at(y).headlight = true;
 						temp.at(y).hasSibling = true;
@@ -642,13 +683,13 @@ void carCounter::startRegionMonitor(cv::Mat &frame, cv::Mat &background, cv::Mat
 				temp.at(x).headlight = true;
 				temp.at(x).hasSibling = false;
 				temp.at(x).id = object_counter+1;
-				
+
 				buffer[0].id[temp.at(x).bIdx] = temp.at(x).id;
 				buffer[0].checked[temp.at(x).bIdx] = temp.at(x).checked;
 				transit.push_front(temp.at(x));
 				for(int i = 0; i < transit.size(); i++)
 					transit[i].tIdx = i;
-				
+
 				object_counter++;
 			}
 		}
@@ -659,7 +700,7 @@ void carCounter::startRegionMonitor(cv::Mat &frame, cv::Mat &background, cv::Mat
 				temp.at(x).headlight = false;
 				temp.at(x).hasSibling = false;
 				temp.at(x).id = object_counter+1;
-				
+
 				buffer[0].id[temp.at(x).bIdx] = temp.at(x).id;
 				buffer[0].checked[temp.at(x).bIdx] = temp.at(x).checked;
 				transit.push_front(temp.at(x));
@@ -676,7 +717,7 @@ void carCounter::endRegionMonitor(cv::Mat &frame,cv::Mat &background,cv::Mat &su
 								  int &car_counter,
 								  std::deque<Frame> &buffer,std::deque<Object> &transit, std::deque<Object> &carArchive,
 								  cv::vector<cv::Point> endRegion){
-	
+
 	for(int i = 0; i < buffer[0].center.size(); i++){
 		bool safetyPass = safetyChecks(frame,background,subtract,buffer, i,10);
 		if(pointPolygonTest(endRegion, buffer[0].center[i], false) == 1 && safetyPass == true){
@@ -692,7 +733,7 @@ void carCounter::endRegionMonitor(cv::Mat &frame,cv::Mat &background,cv::Mat &su
 			if(found == true){
 				while(buffer[0].id[i] != transit[transit.size()-1].id)
 					transit.pop_back();
-				
+
 				if(buffer[0].id[i] == transit[transit.size()-1].id){
 					car_counter++;
 					if(!nightTime){
@@ -748,7 +789,7 @@ void carCounter::checkMissing(int &frame_counter,std::deque<Frame> &buffer,std::
 				transit[i].distanceY_when_last_seen = buffer[0].distanceY[j];
 				transit[i].contour_before_disappearing = buffer[0].contour[j];
 				transit[i].boundbox_before_disappearing = buffer[0].boundRect[j];
-				
+
 				transit[i].area.push_back(buffer[0].boundRect[j].area());
 				transit[i].trajectory.push_back(buffer[0].center[i]);
 				transit[i].frames.push_back(frame_counter);
@@ -778,11 +819,11 @@ void carCounter::checkTransitLedgerUsingMomentAndCenter(int &frame_counter,std::
 				if(cv::matchShapes(buffer[0].contour[i], transit[j].contour_before_disappearing,CV_CONTOURS_MATCH_I2,0) || nightTime){
 					for(int t = transit[j].trajectories_before_disappearing.size()-1; t >= 0; t--){
 						for(int m = transit[j].trajectories_before_disappearing[t].size()-1; m >= 0; m--){
-							if(((buffer[0].center[i].x > transit[j].trajectories_before_disappearing[t].at(m).x-expectedDist) 
-								&& (transit[j].trajectories_before_disappearing[t].at(m).x+expectedDist > buffer[0].center[i].x)) 
-							&& ((buffer[0].center[i].y > transit[j].trajectories_before_disappearing[t].at(m).y-expectedDist) 
+							if(((buffer[0].center[i].x > transit[j].trajectories_before_disappearing[t].at(m).x-expectedDist)
+								&& (transit[j].trajectories_before_disappearing[t].at(m).x+expectedDist > buffer[0].center[i].x))
+							&& ((buffer[0].center[i].y > transit[j].trajectories_before_disappearing[t].at(m).y-expectedDist)
 								&& (transit[j].trajectories_before_disappearing[t].at(m).y+expectedDist > buffer[0].center[i].y))){
-								
+
 								buffer[0].start_loc[i] = transit[j].start_loc;
 								buffer[0].id[i] = transit[j].id;
 
@@ -790,16 +831,16 @@ void carCounter::checkTransitLedgerUsingMomentAndCenter(int &frame_counter,std::
 								buffer[0].time[i] = n_time;
 
 								// Instantanous Metrics
-								buffer[0].velocity[i] = sqrt(pow(buffer[0].center[i].x - transit[j].center_when_last_seen.x,2.0) 
+								buffer[0].velocity[i] = sqrt(pow(buffer[0].center[i].x - transit[j].center_when_last_seen.x,2.0)
 								+ pow(buffer[0].center[i].y - transit[j].center_when_last_seen.y,2.0))/(frame_counter - transit[j].last_seen);
 
 								buffer[0].velocityX[i] = (buffer[0].center[i].x - transit[j].center_when_last_seen.x)/(frame_counter - transit[j].last_seen);
 								buffer[0].velocityY[i] = (buffer[0].center[i].y - transit[j].center_when_last_seen.y)/(frame_counter - transit[j].last_seen);
 
 								// Average Metrics
-								buffer[0].distance[i] = sqrt(pow(buffer[0].center[i].x - transit[j].start_loc.x,2.0) 
+								buffer[0].distance[i] = sqrt(pow(buffer[0].center[i].x - transit[j].start_loc.x,2.0)
 								+ pow(buffer[0].center[i].y - transit[j].start_loc.y,2.0));
-								
+
 								buffer[0].distanceX[i] = buffer[0].center[i].x-transit[j].start_loc.x;
 								buffer[0].distanceY[i] = buffer[0].center[i].y-transit[j].start_loc.y;
 
@@ -839,11 +880,11 @@ void carCounter::checkTransitLedgerUsingMomentAndCenter(int &frame_counter,std::
 
 
 void carCounter::persistenceCheck(int &frame_counter,int type,std::deque<Frame> &buffer, std::deque<Object> &transit,int expectedDist){
-	if(type == 0) 
+	if(type == 0)
 		checkTransitLedgerUsingMomentAndCenter(frame_counter,buffer,transit,expectedDist);
-	else 
+	else
 		assert(type < 1 && type >= 0);
-	
+
 	// Additional methods or combination of methods can be used to check for persistence between frames.
 }
 
@@ -851,13 +892,14 @@ void carCounter::selectBackgroundSubtraction(bool useMOG2, bool nightTime,
 											 cv::Mat &resizeF,cv::Mat &mask,
 											 int nmixtures, double backgroundratio, bool detectShadows){
 	if(!useMOG2 && !nightTime){
-		bgsAdaptiveMedian->process(resizeF, mask, background);
-	}else if(useMOG2 && !nightTime){ 
-		MOG2.set("nmixtures", nmixtures);
-		MOG2.set("backgroundRatio", backgroundratio);
-		MOG2.set("detectShadows", detectShadows);
-		MOG2(resizeF, mask,.005);
-		MOG2.getBackgroundImage(background);
+	  bgsAdaptiveMedian->process(resizeF, mask, background);
+	}else if(useMOG2 && !nightTime){
+	  pMOG2 = cv::createBackgroundSubtractorMOG2();
+	  pMOG2->setNMixtures(nmixtures);
+	  pMOG2->setBackgroundRatio(backgroundratio);
+	  pMOG2->setDetectShadows(detectShadows);
+	  pMOG2->apply(resizeF, mask,.005);
+	  pMOG2->getBackgroundImage(background);
 	}else{
 		// Nighttime case, switch to Frame Difference.
 		bgsFrameDifference->process(resizeF, mask, background);
@@ -903,11 +945,11 @@ void carCounter::drawResult(int &car_counter, int &object_counter, cv::Mat &fram
 				cv::Scalar color = cv::Scalar(255,0,255);
 				if( buffer[0].pTraj[i].size() > 2){
 					for(int j = 0; j < buffer[0].pTraj[i].size()-1; j++){
-						line(frame, buffer[0].pTraj[i].at(j), buffer[0].pTraj[i].at(j+1), color, 20, 8, 0);	
+						line(frame, buffer[0].pTraj[i].at(j), buffer[0].pTraj[i].at(j+1), color, 20, 8, 0);
 					}
 				}
 				for(int j = 0; j < buffer[0].pTraj[i].size(); j++){
-					circle(frame, buffer[0].pTraj[i].at(j), 1, cv::Scalar(255,255,255), 3, 8, 0);	
+					circle(frame, buffer[0].pTraj[i].at(j), 1, cv::Scalar(255,255,255), 3, 8, 0);
 				}
 			}
 		}
@@ -939,22 +981,22 @@ void carCounter::drawResult(int &car_counter, int &object_counter, cv::Mat &fram
 	if(showLastCar && carArchive.size() != 0){
 		String s = "Last_Car_";
 		std::string r = s + std::to_string(id);
-		imshow(r,carArchive[carArchive.size()-1].img);   
+		imshow(r,carArchive[carArchive.size()-1].img);
 	}
 
 	// transit ledger.
 	if(displayTransitLedger){
-		putText(frame, "object counter="+std::to_string(object_counter), 
+		putText(frame, "object counter="+std::to_string(object_counter),
 			cv::Point(25,25), FONT_HERSHEY_PLAIN, 1.0, CV_RGB(255,0,0), 2.0);
 
-		putText(frame, "car counter="+std::to_string(car_counter), 
+		putText(frame, "car counter="+std::to_string(car_counter),
 			cv::Point(25,45), FONT_HERSHEY_PLAIN, 1.0, CV_RGB(255,0,0), 2.0);
 
-		putText(frame, "In Transit: ", 
+		putText(frame, "In Transit: ",
 			cv::Point(25,65), FONT_HERSHEY_PLAIN, 1.0, CV_RGB(255,0,0), 2.0);
 
 		for(int i = 0; i < transit.size(); i++)
-			putText(frame, std::to_string(transit[i].id) +" | "+std::to_string(transit[i].miss), 
+			putText(frame, std::to_string(transit[i].id) +" | "+std::to_string(transit[i].miss),
 			cv::Point(25,85+i*20), FONT_HERSHEY_PLAIN, 1.0, CV_RGB(255,0,0), 2.0);
 	}
 
@@ -979,19 +1021,19 @@ carCounter::carCounter(int expID,bool night) {
 }
 
 /* make the counter start counting */
-void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight, int skip, int learningTime, 
-		 char fileName[100], char saveImgTo[200], char dataBase[200],  
-		 int fps, 
+void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight, int skip, int learningTime,
+		 char fileName[100], char saveImgTo[200], char dataBase[200],
+		 int fps,
 		 int expectedDist, int horizontalBandWidth,
 		 bool online, const cv::Point* ppt, const cv::Point* ppt2,int* npt,int* npt2,
 		 bool useMOG2, int nmixtures, double backgroundratio, bool detectShadows,
-		 bool showLastCar, bool boundBoxesOn, bool predictionOn, bool latestPathsOn, 
+		 bool showLastCar, bool boundBoxesOn, bool predictionOn, bool latestPathsOn,
 		 bool displayTransitLedger, bool displayFocusRegions, int showPathofId,
 		 int displayType,
 		 cv::vector<cv::Point> startRegion,cv::vector<cv::Point> endRegion){
 
-	// 0 is the id of video device.0 if you have only one camera.	
-	cv::VideoCapture stream(fileName);  
+	// 0 is the id of video device.0 if you have only one camera.
+	cv::VideoCapture stream(fileName);
 	bgsAdaptiveMedian = new DPAdaptiveMedianBGS;
 	bgsFrameDifference = new FrameDifferenceBGS;
 
@@ -1000,9 +1042,9 @@ void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight
 	// Background archiving process.
 	std::thread DBthread(&carCounter::exportCarsToDB,*this,id,fileName,saveImgTo,std::ref(carArchive),fps);
 	DBthread.detach();
-	
-	// Unconditional loop (keeps grabbing frames from video).     
-	while (true) {     
+
+	// Unconditional loop (keeps grabbing frames from video).
+	while (true) {
 		frame_counter++;
 		if(frame_counter % skip == 0){
 			// OBTAIN FRAME
@@ -1018,7 +1060,7 @@ void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight
 
 			// BACKGROUND SUBTRACTION
 			selectBackgroundSubtraction(useMOG2,nightTime,resizeF,mask,nmixtures,backgroundratio,detectShadows);
-			mask.copyTo(extraMask); // if daytime extraMask and mask will store background subracted foreground, 
+			mask.copyTo(extraMask); // if daytime extraMask and mask will store background subracted foreground,
 									// if nighttime mask will store threshold foreground
 									// extraMask will store the background subtracted foreground.
 
@@ -1027,7 +1069,7 @@ void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight
 				cv::cvtColor(resizeF,resizeFgray,COLOR_RGB2GRAY);
 				threshold(resizeFgray,mask,240.0,255.0,THRESH_BINARY);
 			}
-			
+
 			// CLEAN MASK
 			// clear out noise using erode and dilate, also remove shadows if they are detected.
 			cleanNoise(mask,extraMask,maskrgb,extraMaskrgb);
@@ -1035,7 +1077,7 @@ void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight
 			if(frame_counter > learningTime){
 				// OBJECT DETECTION
 				findContours(mask, contours, hierarchy, CV_RETR_EXTERNAL,  CV_CHAIN_APPROX_NONE, cv::Point(0, 0));
-				
+
 				// Approximate contours to polygons + get bounding rects and circles.
 				cv::vector<cv::vector<cv::Point>> contours_poly(contours.size());
 				cv::vector<cv::Rect> boundRect(contours.size());
@@ -1061,11 +1103,11 @@ void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight
 				// buffer frame data (last X frames are placed in a queue).
 				// buffer flood.
 				if(buffer.size() < bufferSize){
-					buffer.push_front(data);		
+					buffer.push_front(data);
 					// persistence checks only make sense if you have more than one frame.
 					if(buffer.size() > 1){
 						persistenceCheck(frame_counter,0,buffer,transit,expectedDist);
-						startRegionMonitor(frame,background,maskrgb,buffer,transit,startRegion,horizontalBandWidth);		
+						startRegionMonitor(frame,background,maskrgb,buffer,transit,startRegion,horizontalBandWidth);
 						checkMissing(frame_counter,buffer,transit);
 						endRegionMonitor(frame,background,maskrgb,extraMask,minObjectSizeDay,car_counter,buffer,transit,carArchive,endRegion);
 						frameArchive.push_front(buffer[0]);
@@ -1090,19 +1132,19 @@ void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight
 				if(online){
 					if(displayType == USE_BACKGROUND)
 						background.copyTo(display);
-					
+
 					else if(displayType == USE_ORGINAL_FRAME)
 						frame.copyTo(display);
-					
+
 					else if(displayType == USE_RESIZED_WITH_OVERLAYS_FRAME)
 						resizeF.copyTo(display);
-					
+
 					else if(displayType == USE_SUBTRACTED)
 						maskrgb.copyTo(display);
-					
+
 					drawResult(car_counter,object_counter,display,hierarchy,buffer,transit,
-						showLastCar,boundBoxesOn, predictionOn, latestPathsOn, 
-						displayTransitLedger, displayFocusRegions, showPathofId, 
+						showLastCar,boundBoxesOn, predictionOn, latestPathsOn,
+						displayTransitLedger, displayFocusRegions, showPathofId,
 						startRegion,endRegion);
 
 					// display original with bounding boxes.
@@ -1112,7 +1154,7 @@ void carCounter::run(int bufferSize, int minObjectSizeDay,int minObjectSizeNight
 				}
 			}
 
-			if (cv::waitKey(30) >= 0)     
+			if (cv::waitKey(30) >= 0)
 				break;
 		}
 	}

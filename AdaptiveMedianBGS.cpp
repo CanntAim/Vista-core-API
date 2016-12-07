@@ -38,6 +38,10 @@ along with BGSLibrary.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <cmath>
 
+//#include "opencv2/opencv.hpp"
+//#include "opencv2/core/core.hpp"
+//#include "opencv2/highgui/highgui.hpp"
+
 #include "AdaptiveMedianBGS.h"
 
 using namespace Algorithms::BackgroundSubtraction;

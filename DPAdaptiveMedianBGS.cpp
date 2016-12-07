@@ -80,8 +80,8 @@ void DPAdaptiveMedianBGS::process(const cv::Mat &img_input, cv::Mat &img_output,
   
   curMedian = bgs.Background();
 
-  cv::Mat foreground(highThresholdMask.Ptr());
-  cv::Mat background(curMedian->Ptr());
+  cv::Mat foreground(cv::cvarrToMat(highThresholdMask.Ptr()));
+  cv::Mat background(cv::cvarrToMat(curMedian->Ptr()));
 
   foreground.copyTo(img_output);
   background.copyTo(img_bgmodel);

@@ -46,6 +46,12 @@
 #include "DPAdaptiveMedianBGS.h"
 #include "FrameDifferenceBGS.h"
 
+namespace cv
+{
+    using std::vector;
+}
+
+
 /* Frame datatype */
 /* Holistic representation of all the objects captured in the given frame. */ 
 struct Frame
@@ -208,7 +214,7 @@ private:
 	// Frame
 	cv::Mat frame;				// current frame  
 	cv::Mat resizeF;			// current frame resized
-	cv::Mat resizeFgray;		// current frame resized (grayscale)	
+	cv::Mat resizeFgray;	        // current frame resized (grayscale)	
 	
 	// Display Matrix
 	cv::Mat display;		    // can use this to draw whatever you want on it.
@@ -227,7 +233,7 @@ private:
 	cv::vector<cv::Vec3f> vecCircles;               
 	cv::vector<cv::Vec3f>::iterator itrCircles;
 
-	cv::BackgroundSubtractorMOG2 MOG2;  // MOG Background subtractor.
+	cv::Ptr<cv::BackgroundSubtractorMOG2> pMOG2;  // MOG Background subtractor.
 	IBGS *bgsAdaptiveMedian;
 	IBGS *bgsFrameDifference;
 	
@@ -247,7 +253,7 @@ private:
 	   For daytime use either MOG2 or a modified DP Adaptive Median.
  	   For nighttime we use frame difference. (currently not implemented) */
 
-	void carCounter::selectBackgroundSubtraction(bool useMOG2, bool nightTime,
+	void selectBackgroundSubtraction(bool useMOG2, bool nightTime,
 												 cv::Mat &resizeF,cv::Mat &mask,
 												 int nmixtures, double backgroundratio, bool detectShadows);
 
