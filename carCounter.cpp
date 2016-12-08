@@ -13,12 +13,6 @@ int main() {
 }
 
 // utility
-/**
- * C++ version 0.4 char* style "itoa":
- * Written by Lukás Chmela
- * Released under GPLv3.
-
- */
 char* itoa(int value, char* result, int base) {
   // check that the base if valid
   if (base < 2 || base > 36) { *result = '\0'; return result; }
@@ -129,196 +123,196 @@ void carCounter::exportCarsToDB(int expID,char fileName[100],char saveImgTo[200]
 	char * sql;
 	sql = new char[10000];
 
-	char * value0;
-	value0 = new char[100];
+	char * fileNameSegment;
+	fileNameSegment = new char[100];
 
-	char * value1;
-	value1 = new char[100];
+	char * timeStampSegment;
+	timeStampSegment = new char[100];
 
-	char * value2;
-	value2 = new char[15];
+	char * secInVideoSegment;
+	secInVideoSegment = new char[15];
 
-	char * value3;
-	value3 = new char[15];
+	char * expIDSegment;
+	expIDSegment = new char[15];
 
-	char * value4;
-	value4 = new char[15];
+	char * idSegment;
+	idSegment = new char[15];
 
-	char * value5;
-	value5 = new char[15];
+	char * countSegment;
+	countSegment = new char[15];
 
-	char * value6;
-	value6 = new char[1000];
+	char * framesSegment;
+	framesSegment = new char[1000];
 
-	char * value7;
-	value7 = new char[1000];
+	char * ulxSegment;
+	ulxSegment = new char[1000];
 
-	char * value8;
-	value8 = new char[1000];
+	char * ulySegment;
+	ulySegment = new char[1000];
 
-	char * value9;
-	value9 = new char[1000];
+	char * lrxSegment;
+	lrxSegment = new char[1000];
 
-	char * value10;
-	value10 = new char[1000];
+	char * lrySegment;
+	lrySegment = new char[1000];
 
-	char * value11;
-	value11 = new char[1000];
+	char * areaSegment;
+	areaSegment = new char[1000];
 
-	char * value12;
-	value12 = new char[1000];
+	char * saveImageLocationSegment;
+	saveImageLocationSegment = new char[1000];
 
 	char * temp;
 	temp = new char[15];
 
 	// File path
-	strcpy (value0,"'");
-	strncat (value0,fileName,100);
-	strncat (value0,"'",1);
+	strcpy (fileNameSegment,"'");
+	strncat (fileNameSegment,fileName,100);
+	strncat (fileNameSegment,"'",1);
 
 	// Time and Date
 	time_t now = time(0);
 	tm* localtm = localtime(&now);
 	tm* gmtm = gmtime(&now);
-	strcpy (value1,"'");
-	strncat (value1,asctime(gmtm),100);
-	strncat (value1,"'",1);
+	strcpy (timeStampSegment,"'");
+	strncat (timeStampSegment,asctime(gmtm),100);
+	strncat (timeStampSegment,"'",1);
 
 	while(true){
 		while(index < carArchive.size()){
 			// Archive Last Frame Time
 			int last_frame = carArchive[index].frames[carArchive[index].frames.size()-1];
 			double secsInVideo = (double) (last_frame)/(double) (fps);
-			sprintf(value2, "%f", secsInVideo);
+			sprintf(secInVideoSegment, "%f", secsInVideo);
 
 			// Expirement Id
-			itoa (expID,value3,10);
+			itoa (expID,expIDSegment,10);
 
 			// Archive Car Id
-			itoa (carArchive[index].id,value4,10);
+			itoa (carArchive[index].id,idSegment,10);
 
 			// Archive Car Count
-			itoa (carArchive[index].count,value5,10);
+			itoa (carArchive[index].count,countSegment,10);
 
 			// Archive Frames
-			strcpy (value6,"'");
+			strcpy (framesSegment,"'");
 			for(int i=1; i < carArchive[index].frames.size(); i++){
 				itoa (carArchive[index].frames[i],temp,10);
 				if(i != carArchive[index].frames.size()-1){
 					strncat (temp," ",1);
-					strncat (value6,temp,15);
+					strncat (framesSegment,temp,15);
 				} else {
 					strncat (temp,"'",1);
-					strncat(value6,temp,15);
+					strncat(framesSegment,temp,15);
 				}
 			}
 
 			// Archive ulX
-			strcpy (value7,"'");
+			strcpy (ulxSegment,"'");
 			for(int i=1; i < carArchive[index].ulx.size(); i++){
 				itoa (carArchive[index].ulx[i],temp,10);
 				if(i != carArchive[index].ulx.size()-1){
 					strncat (temp," ",1);
-					strncat (value7,temp,15);
+					strncat (ulxSegment,temp,15);
 				} else {
 					strncat (temp,"'",1);
-					strncat(value7,temp,15);
+					strncat(ulxSegment,temp,15);
 				}
 			}
 
 			// Archive ulY
-			strcpy (value8,"'");
+			strcpy (ulySegment,"'");
 			for(int i=1; i < carArchive[index].uly.size(); i++){
 				itoa (carArchive[index].uly[i],temp,10);
 				if(i != carArchive[index].uly.size()-1){
 					strncat (temp," ",1);
-					strncat (value8,temp,15);
+					strncat (ulySegment,temp,15);
 				} else {
 					strncat (temp,"'",1);
-					strncat(value8,temp,15);
+					strncat(ulySegment,temp,15);
 				}
 			}
 
 			// Archive lrX
-			strcpy (value9,"'");
+			strcpy (lrxSegment,"'");
 			for(int i=1; i < carArchive[index].lrx.size(); i++){
 				itoa (carArchive[index].lrx[i],temp,10);
 				if(i != carArchive[index].lrx.size()-1){
 					strncat (temp," ",1);
-					strncat (value9,temp,15);
+					strncat (lrxSegment,temp,15);
 				} else {
 					strncat (temp,"'",1);
-					strncat(value9,temp,15);
+					strncat(lrxSegment,temp,15);
 				}
 			}
 
 			// Archive lrY
-			strcpy (value10,"'");
+			strcpy (lrySegment,"'");
 			for(int i=1; i < carArchive[index].lry.size(); i++){
 				itoa (carArchive[index].lry[i],temp,10);
 				if(i != carArchive[index].lry.size()-1){
 					strncat (temp," ",1);
-					strncat (value10,temp,15);
+					strncat (lrySegment,temp,15);
 				} else {
 					strncat (temp,"'",1);
-					strncat(value10,temp,15);
+					strncat(lrySegment,temp,15);
 				}
 			}
 
 			// Archive Area
-			strcpy (value11,"'");
+			strcpy (areaSegment,"'");
 			for(int i=1; i < carArchive[index].area.size(); i++){
 				itoa (carArchive[index].area[i],temp,10);
 				if(i != carArchive[index].area.size()-1){
 					strncat (temp," ",1);
-					strncat (value11,temp,15);
+					strncat (areaSegment,temp,15);
 				} else {
 					strncat (temp,"'",1);
-					strncat(value11,temp,15);
+					strncat(areaSegment,temp,15);
 				}
 			}
 
 			// Save image locally & save directory
-			strcpy (value12,saveImgTo);
-			strncat (value12,"exp",15);
-			strncat (value12,value3,15);
-			strncat (value12,"_",15);
-			strncat (value12,"id",15);
-			strncat (value12,value4,15);
-			strncat (value12,".jpg",15);
-			String value12_S = String(value12);
-			imwrite(value12_S, carArchive[index].img );
+			strcpy (saveImageLocationSegment,saveImgTo);
+			strncat (saveImageLocationSegment,"exp",15);
+			strncat (saveImageLocationSegment,expIDSegment,15);
+			strncat (saveImageLocationSegment,"_",15);
+			strncat (saveImageLocationSegment,"id",15);
+			strncat (saveImageLocationSegment,idSegment,15);
+			strncat (saveImageLocationSegment,".jpg",15);
+			String saveImageLocationSegment_S = String(saveImageLocationSegment);
+			imwrite(saveImageLocationSegment_S, carArchive[index].img );
 
 			/* Create SQL statement */
 			strcpy(sql,"INSERT INTO CarTable_exp");
-			strncat(sql,value3,15);
+			strncat(sql,expIDSegment,15);
 			strncat(sql,"(Video,Date,SecInVid,expID,CarID,Count,Frames,ULX,ULY,LRX,LRY,Area,Path) VALUES (",100);
-			strncat(sql,value0,100);
+			strncat(sql,fileNameSegment,100);
 			strncat(sql,",",1);
-			strncat(sql,value1,100);
+			strncat(sql,timeStampSegment,100);
 			strncat(sql,",",1);
-			strncat(sql,value2,15);
+			strncat(sql,secInVideoSegment,15);
 			strncat(sql,",",1);
-			strncat(sql,value3,15);
+			strncat(sql,expIDSegment,15);
 			strncat(sql,",",1);
-			strncat(sql,value4,15);
+			strncat(sql,idSegment,15);
 			strncat(sql,",",1);
-			strncat(sql,value5,15);
+			strncat(sql,countSegment,15);
 			strncat(sql,",",1);
-			strncat(sql,value6,1000);
+			strncat(sql,framesSegment,1000);
 			strncat(sql,",",1);
-			strncat(sql,value7,1000);
+			strncat(sql,ulxSegment,1000);
 			strncat(sql,",",1);
-			strncat(sql,value8,1000);
+			strncat(sql,ulySegment,1000);
 			strncat(sql,",",1);
-			strncat(sql,value9,1000);
+			strncat(sql,lrxSegment,1000);
 			strncat(sql,",",1);
-			strncat(sql,value10,1000);
+			strncat(sql,lrySegment,1000);
 			strncat(sql,",",1);
-			strncat(sql,value11,1000);
+			strncat(sql,areaSegment,1000);
 			strncat(sql,",",1);
 			strncat(sql,"'",1);
-			strncat(sql,value12,100);
+			strncat(sql,saveImageLocationSegment,100);
 			strncat(sql,"'",1);
 			strncat(sql,");",3);
 
@@ -342,19 +336,19 @@ void carCounter::exportCarsToDB(int expID,char fileName[100],char saveImgTo[200]
 				fprintf(stdout, "Records created successfully\n");
 				fprintf(stdout, "----------------------------\n");
 				fprintf(stdout, "Record idx:%d\n",index);
-				fprintf(stdout, "Record Video:%s\n",value0);
-				fprintf(stdout, "Record Video Date:%s\n",value1);
-				fprintf(stdout, "Record Seconds into Video:%s\n",value2);
-				fprintf(stdout, "Record EID:%s\n",value3);
-				fprintf(stdout, "Record CID:%s\n",value4);
-				fprintf(stdout, "Record count:%s\n",value5);
-				fprintf(stdout, "Record frames:%s\n",value6);
-				fprintf(stdout, "Record ULX:%s\n",value7);
-				fprintf(stdout, "Record ULY:%s\n",value8);
-				fprintf(stdout, "Record LRX:%s\n",value9);
-				fprintf(stdout, "Record LRY:%s\n",value10);
-				fprintf(stdout, "Record Area:%s\n",value11);
-				fprintf(stdout, "Path of image:%s\n",value12);
+				fprintf(stdout, "Record Video:%s\n",fileNameSegment);
+				fprintf(stdout, "Record Video Date:%s\n",timeStampSegment);
+				fprintf(stdout, "Record Seconds into Video:%s\n",secInVideoSegment);
+				fprintf(stdout, "Record EID:%s\n",expIDSegment);
+				fprintf(stdout, "Record CID:%s\n",idSegment);
+				fprintf(stdout, "Record count:%s\n",countSegment);
+				fprintf(stdout, "Record frames:%s\n",framesSegment);
+				fprintf(stdout, "Record ULX:%s\n",ulxSegment);
+				fprintf(stdout, "Record ULY:%s\n",ulySegment);
+				fprintf(stdout, "Record LRX:%s\n",lrxSegment);
+				fprintf(stdout, "Record LRY:%s\n",lrySegment);
+				fprintf(stdout, "Record Area:%s\n",areaSegment);
+				fprintf(stdout, "Path of image:%s\n",saveImageLocationSegment);
 			}
 			index++;
 		}
