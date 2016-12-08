@@ -63,4 +63,4 @@ cd <Location of Repository locally>
 cmake .
 make
 ```
-It should compile succesfully (I had some warnings using default flags, will try to get rid of them if I have time). You can include this as a dependency in another project, I'll assume whoever is using this knowns how to this.
+It should compile succesfully (I had some warnings using default flags, will try to get rid of them if I have time). I have included a proper cmake file in the repository that you can use to generate a makefile. You can include the resulting binary as a dependency in another project. Or if you prefer you can include the source directly in your project and compile it using your own makefile.
