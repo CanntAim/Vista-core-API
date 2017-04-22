@@ -45,7 +45,7 @@ Car enters here!                                                      Cars exit 
                                 Persistency/Missing Checker       Image Processors
                                |---------------------------|----------------------------|
                                | Subroutines keep tabs     | Subrountines that          |
-                               | On the objects marked     | keep clean up images       |           
+                               | On the objects marked     | clean up images            |           
                                | in the transit ledger     | do background subtraction, |                
                                | and maintains a notion    | histogram analysis, etc    |
                                | of continium across       |                            |
@@ -58,9 +58,11 @@ Car enters here!                                                      Cars exit 
 <p>Simply follow the installation guide for OpenCV installation provided here:</p>
 http://docs.opencv.org/3.0-last-rst/doc/tutorials/introduction/linux_install/linux_install.html
 <p>Clone my repository to your local and proceed as followed:</p>
+
 ```
 cd <Location of Repository locally>
 cmake .
 make
 ```
-It should compile succesfully (I had some warnings using default flags, will try to get rid of them if I have time). I have included a proper cmake file in the repository that you can use to generate a makefile and then run make. You can include the resulting binary as a dependency in another project. Or if you prefer you can include the source directly in your project and compile it using your own makefile.
+
+<p>It should compile succesfully (I had some warnings using default flags, will try to get rid of them if I have time). I have included a proper cmake file in the repository that you can use to generate a makefile and then run make. You can include the resulting binary as a dependency in another project. Or if you prefer you can include the source directly in your project and compile it using your own makefile.
