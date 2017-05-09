@@ -68,7 +68,7 @@ cmake .. -DCMAKE_INSTALL_PREFIX=../_install
 make
 make install
 ```
-* Go to Vista-cmd-example and re-run the above command. Note that you need to change to your own path here:
+* Go to Vista-cmd-example and re-run the above command. Note that you need to change to your own path in the cmakelist.txt of this project:
 
 ```
 target_link_libraries(vista-example -lm -ldl -pthread ${OpenCV_LIBS} /home/vanya/Repos/vista/Vista-core-API/_install/lib/libvista-core.a -ldl)
