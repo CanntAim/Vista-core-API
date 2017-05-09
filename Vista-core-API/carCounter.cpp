@@ -7,11 +7,6 @@ namespace cv
   using std::vector;
 }
 
-// entry point
-int main() {
-  return 0;
-}
-
 // utility
 char* itoa(int value, char* result, int base) {
   // check that the base if valid
