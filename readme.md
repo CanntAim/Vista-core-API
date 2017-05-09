@@ -45,7 +45,7 @@ Car enters here!                                                      Cars exit 
                                 Persistency/Missing Checker       Image Processors
                                |---------------------------|----------------------------|
                                | Subroutines keep tabs     | Subrountines that          |
-                               | On the objects marked     | clean up images            |           
+                               | On the objects marked     | clean up images,           |           
                                | in the transit ledger     | do background subtraction, |                
                                | and maintains a notion    | histogram analysis, etc    |
                                | of continium across       |                            |
@@ -59,10 +59,19 @@ Car enters here!                                                      Cars exit 
 http://docs.opencv.org/3.0-last-rst/doc/tutorials/introduction/linux_install/linux_install.html
 <p>Clone my repository to your local and proceed as followed:</p>
 
+* Go to Vista-core-API and run:
+
 ```
-cd <Location of Repository locally>
-cmake .
+mkdir _build
+cd _build
+cmake .. -DCMAKE_INSTALL_PREFIX=../_install
 make
+make install
+```
+* Go to Vista-cmd-example and re-run the above command. Note that you need to change to your own path here:
+
+```
+target_link_libraries(vista-example -lm -ldl -pthread ${OpenCV_LIBS} /home/vanya/Repos/vista/Vista-core-API/_install/lib/libvista-core.a -ldl)
 ```
 
-<p>It should compile succesfully (I had some warnings using default flags, will try to get rid of them if I have time). I have included a proper cmake file in the repository that you can use to generate a makefile and then run make. You can include the resulting binary as a dependency in another project. Or if you prefer you can include the source directly in your project and compile it using your own makefile.
+<p>It should compile succesfully (I had some warnings using default flags, will try to get rid of them if I have time). I have included a proper cmake list files in the repository that you can use to generate a makefile and then run make. You can include the resulting binary as a dependency in another project. Or if you prefer you can include the source directly in your project and compile it using your own makefile.
