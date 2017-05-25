@@ -17,9 +17,9 @@ namespace cv
 }
 
 int main(int argc, const char * argv[]){
-	char fileName[100] = "Standard_SCU3IU_2014-08-18_0700.002.avi";
-	char saveImgTo[200] = "/home/vanya/Repos/vista/Vista-cmd-example/images";
-	char dataBase[200] = "/home/vanya/Repos/vista/Vista-core-API/car_count_db";
+	char fileName[100] = "/home/vanya/Videos/test_downsample.avi";
+	char saveImgTo[200] = "/home/vanya/Repos/vista/vista-app-core/Vista-cmd-example/images";
+	char dataBase[200] = "/home/vanya/Repos/vista/vista-app-core/Vista-core-API/car_count_db";
 	int bufferSize = 2;
 	int minObjectSizeDay = 5000;
 	int minObjectSizeNight = 10;

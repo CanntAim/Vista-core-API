@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 project( vista-example )
 find_package( OpenCV REQUIRED )
 add_executable( vista-example main.cpp)
-target_link_libraries(vista-example -lm -ldl -pthread ${OpenCV_LIBS} /home/vanya/Repos/vista/Vista-core-API/_install/lib/libvista-core.a -ldl)
+target_link_libraries(vista-example -lm -ldl -pthread ${OpenCV_LIBS} /home/vanya/Repos/vista/vista-app-core/Vista-core-API/_install/lib/libvista-core.a -ldl)
 install(TARGETS vista-example DESTINATION exec)
 include(CheckCXXCompilerFlag)
 
